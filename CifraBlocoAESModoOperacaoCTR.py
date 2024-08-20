@@ -1,4 +1,5 @@
 # Cifra de Bloco AES (Advanced Encryption Standard)
+# Modo de Operação CTR (Counter Mode)
 
 # Importação da biblioteca NUMPY
 import numpy as np
@@ -124,7 +125,7 @@ def key_expansion(key):
   return key_schedule
 
 # Cifração AES: Passa o bloco de dados de 128 bits por 10 rodadas de cifração.
-def cifracao(plaintext, key):
+def cifracao_cifra_bloco_aes(plaintext, key):
   state = list(plaintext)
   key_schedule = key_expansion(key)
   state = add_round_key(state, key_schedule, 0)
@@ -139,7 +140,7 @@ def cifracao(plaintext, key):
   return state
 
 # Decifração AES: Passa o bloco cifrado de 128 bits por 10 rodadas de decifração.
-def decifracao(ciphertext, key):
+def decifracao_cifra_bloco_aes(ciphertext, key):
   state = list(ciphertext)
   key_schedule = key_expansion(key)
   state = add_round_key(state, key_schedule, 10)
@@ -153,23 +154,64 @@ def decifracao(ciphertext, key):
   state = add_round_key(state, key_schedule, 0)
   return state
 
+# Função auxiliar para operação XOR 
+def xor_bytes(a, b):
+  return [x ^ y for x, y in zip(a, b)]
+
+# Função auxiliar para conversão de inteiros para bytes.
+def int_to_bytes(n, length):
+  return n.to_bytes(length, 'big')
+
+# Função auxiliar para conversão de bytes para inteiros.
+def bytes_to_int(b):
+  return int.from_bytes(b, 'big')
+
+# Cifração Modo de Operação CTR
+def cifracao_modo_operacao_CTR(plaintext, key, nonce, counter):
+  block_size = 16
+  ciphertext = []
+  for i in range(0, len(plaintext), block_size):
+    block = plaintext[i:i + block_size]
+    counter_block = nonce + int_to_bytes(counter, 8)
+    encrypted_counter = cifracao_cifra_bloco_aes(counter_block, key)
+    cipher_block = xor_bytes(block, encrypted_counter[:len(block)])
+    ciphertext.extend(cipher_block)
+    counter += 1
+  return bytes(ciphertext)
+
+# Decifração Modo CTR
+def decifracao_modo_operacao_CTR(ciphertext, key, nonce, counter):
+  return cifracao_modo_operacao_CTR(ciphertext, key, nonce, counter)
+
+# Definindo um nonce de 64 bits (número único)
+nonce = b'\x00' * 8
+
+# Definindo um valor inicial do contador
+counter = 0
+
 # Tamanho do Bloco de Dados: 128 bits ou 16 bytes.
-plaintext = b'\x32\x88\x31\xe0\x43\x5a\x31\x37\xf6\x30\x98\x07\xa8\x8d\xa2\x34'
+plaintext = b'segurancaComputacional'
 
 # Tamanho da Chave Secreta: 128 bits ou 16 bytes.
-key = b'\x2b\x7e\x15\x16\x28\xae\xd2\xa6\xab\xf7\xcf\x30\x4b\x24\x58\x59'
+key = b'1234567890abcdef'
 
 # Entrada recebe o bloco de dados de 128 bits para criptografar e uma chave secreta
-ciphertext = cifracao(plaintext, key)
+ciphertext = cifracao_modo_operacao_CTR(plaintext, key, nonce, counter)
 
 # Recebe o bloco criptografado de 128 bits para descriptografar e uma chave secreta
-deciphertext = decifracao(ciphertext, key)
+deciphertext = decifracao_modo_operacao_CTR(ciphertext, key, nonce, counter)
 
-# Entrada sem estar criptografado
-print("Plain Text: ", bytes(plaintext).hex())
+# Entrada sem estar criptografado em hexadecimal
+print("Plain Text (Hexadecimal): ", bytes(plaintext).hex())
 
-# Saída que resulta no bloco de dados de 128 bits criptografado.
-print("Cipher Text: ", bytes(ciphertext).hex())
+# Entrada sem estar criptografado em string
+print("Plain Text (String): ", bytes(plaintext).decode())
 
-# Saída que resulta no bloco de dados de 128 bits descriptografado.
-print("Decipher Text: ", bytes(deciphertext).hex())
+# Saída que resulta no bloco de dados de 128 bits criptografado em hexadecimal.
+print("Cipher Text (Hexadecimal): ", bytes(ciphertext).hex())
+
+# Saída que resulta no bloco de dados de 128 bits descriptografado em hexadecimal.
+print("Decipher Text (Hexadecimal): ", bytes(deciphertext).hex())
+
+# Saída que resulta no bloco de dados de 128 bits descriptografado em hexadecimal.
+print("Decipher Text (String): ", bytes(deciphertext).decode())
