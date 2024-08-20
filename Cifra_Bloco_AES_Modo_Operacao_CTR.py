@@ -154,19 +154,19 @@ def decifracao_cifra_bloco_aes(ciphertext, key):
   state = add_round_key(state, key_schedule, 0)
   return state
 
-# Função auxiliar para operação XOR 
+# Operação XOR Bytes: Gerar o fluxo de chave que será combinado com os blocos de texto claro através de XOR para cifrar e decifrar os dados.
 def xor_bytes(a, b):
   return [x ^ y for x, y in zip(a, b)]
 
-# Função auxiliar para conversão de inteiros para bytes.
+# Conversão de inteiros para bytes.
 def int_to_bytes(n, length):
   return n.to_bytes(length, 'big')
 
-# Função auxiliar para conversão de bytes para inteiros.
+# Conversão de bytes para inteiros.
 def bytes_to_int(b):
   return int.from_bytes(b, 'big')
 
-# Cifração Modo de Operação CTR
+# Cifração Modo de Operação CTR: Transformar uma cifra de bloco em uma cifra de fluxo e incrementa o contador para cada bloco cifrado.
 def cifracao_modo_operacao_CTR(plaintext, key, nonce, counter):
   block_size = 16
   ciphertext = []
@@ -186,7 +186,7 @@ def decifracao_modo_operacao_CTR(ciphertext, key, nonce, counter):
 # Definindo um nonce de 64 bits (número único)
 nonce = b'\x00' * 8
 
-# Definindo um valor inicial do contador
+# Valor inicial do contador: AES deve ser utilizado para cifrar o valor do contador, que depois será combinado com o bloco de texto cifrado.
 counter = 0
 
 # Tamanho do Bloco de Dados: 128 bits ou 16 bytes.
