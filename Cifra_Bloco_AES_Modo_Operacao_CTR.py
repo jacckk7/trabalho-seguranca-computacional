@@ -215,3 +215,18 @@ print("Decipher Text (Hexadecimal): ", bytes(deciphertext).hex())
 
 # Saída que resulta no bloco de dados de 128 bits descriptografado em hexadecimal.
 print("Decipher Text (String): ", bytes(deciphertext).decode())
+
+
+with open('teste.txt', 'rb') as file:
+  plaintext = file.read()
+  ciphertext = cifracao_modo_operacao_CTR(plaintext, key, nonce, counter)
+  
+with open('teste_encriptado.bin', 'wb') as file:
+  file.write(ciphertext)
+  
+with open('teste_encriptado.bin', 'rb') as file:
+  cyphertext = file.read()
+  deciphertext = decifracao_modo_operacao_CTR(cyphertext, key, nonce, counter)
+  
+with open('teste_desencriptado.txt', 'wb') as file:
+  file.write(deciphertext)
