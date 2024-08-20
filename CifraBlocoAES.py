@@ -154,10 +154,10 @@ def decifracao(ciphertext, key):
   return state
 
 # Tamanho do Bloco de Dados: 128 bits ou 16 bytes.
-plaintext = b'This is a test123'
+plaintext = b'\x32\x88\x31\xe0\x43\x5a\x31\x37\xf6\x30\x98\x07\xa8\x8d\xa2\x34'
 
 # Tamanho da Chave Secreta: 128 bits ou 16 bytes.
-key = b'TestKey123456789'
+key = b'\x2b\x7e\x15\x16\x28\xae\xd2\xa6\xab\xf7\xcf\x30\x4b\x24\x58\x59'
 
 # Entrada recebe o bloco de dados de 128 bits para criptografar e uma chave secreta
 ciphertext = cifracao(plaintext, key)
@@ -172,4 +172,4 @@ print("Plain Text: ", bytes(plaintext).hex())
 print("Cipher Text: ", bytes(ciphertext).hex())
 
 # Saída que resulta no bloco de dados de 128 bits descriptografado.
-print("Decipher Text: ", bytes(deciphertext).decode())
+print("Decipher Text: ", bytes(deciphertext).hex())
