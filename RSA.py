@@ -119,17 +119,19 @@ def oaep_decode(encoded_message, k, hash_function=hashlib.sha256):
 
 # Funções de cifração e decifração RSA com OAEP
 def rsa_encrypt_oaep(message, public_key, k, hash_function=hashlib.sha256):
-  encoded_message = oaep_encode(message.encode(), k, hash_function)
+  encoded_message = oaep_encode(message, k, hash_function)
   n, e = public_key
   message_int = int.from_bytes(encoded_message, byteorder='big')
   cipher_int = pow(message_int, e, n)
-  return cipher_int
+  cipher_bytes = cipher_int.to_bytes(k, byteorder='big')
+  return cipher_bytes
 
-def rsa_decrypt_oaep(cipher_int, private_key, k, hash_function=hashlib.sha256):
+def rsa_decrypt_oaep(cipher_bytes, private_key, k, hash_function=hashlib.sha256):
   n, d = private_key
+  cipher_int = int.from_bytes(cipher_bytes, byteorder='big')
   message_int = pow(cipher_int, d, n)
   encoded_message = message_int.to_bytes(k, byteorder='big')
-  return oaep_decode(encoded_message, k, hash_function).decode()
+  return oaep_decode(encoded_message, k, hash_function)
 
 # Cálculo do hash da mensagem usando SHA-3
 def calculate_hash(message):
@@ -161,26 +163,81 @@ def verify_signature(message, signature_bytes, public_key):
 if __name__ == "__main__":
   # Geração das chaves
   public_key, private_key = generate_keys(1024)
-  
-  # Mensagem original
-  message = "Esta é uma mensagem secreta."
   k = (public_key[0].bit_length() + 7) // 8  # Tamanho em bytes da chave pública
+  
+  while(True):
+    print("Opções:")
+    print("1 - Criptografar um arquivo usando RSA OAEP")
+    print("2 - Desencriptar um arquivo usando RSA OAEP")
+    print("3 - Fazer a assinatura de um arquivo")
+    print("4 - Verificara a assinatura de um arquivo")
+    print("5 - Sair")
+    print()
+    
+    escolha = input("Escolha uma opção: ")
+    
+    if escolha == "1":
+      arquivo = input("Digite o nome do arquivo txt sem a extensão: ")
+      
+      with open(arquivo + ".txt", 'rb') as file:
+        texto = file.read()
+        ciphertext = rsa_encrypt_oaep(texto, public_key, k)
+        file.close()
+        
+      with open(arquivo + "_encriptado.txt", 'wb') as file:
+        file.write(ciphertext)
+        file.close()
 
-  # Etapa I: Cifração usando OAEP
-  cipher_int = rsa_encrypt_oaep(message, public_key, k)
-  print("Mensagem Cifrada:", cipher_int)
+      print(f'Arquivo encriptado com o nome {arquivo}_encriptado.txt\n\n')
+      
+    elif escolha == "2":
+      arquivo = input("Digite o nome do arquivo txt sem a extensão: ")
+      
+      with open(arquivo + ".txt", 'rb') as file:
+        texto = file.read()
+        decrypted_message = rsa_decrypt_oaep(texto, private_key, k)
+        file.close()
+        
+      with open(arquivo + "_desencriptado.txt", 'wb') as file:
+        file.write(decrypted_message)
+        file.close()
 
-  # Etapa II: Assinatura
-  signature_int = sign_message(message, private_key)
-  signature_bytes = format_signature(signature_int)
-  print("Assinatura:", signature_bytes)
-
-  # Etapa III: Verificação
-  if verify_signature(message, signature_bytes, public_key):
-    print("Assinatura verificada com sucesso!")
-  else:
-    print("Assinatura inválida!")
-
-  # Decifração da mensagem usando OAEP
-  decrypted_message = rsa_decrypt_oaep(cipher_int, private_key, k)
-  print("Mensagem Decifrada:", decrypted_message)
+      print(f'Arquivo desencriptado com o nome {arquivo}_desencriptado.txt\n\n')
+      
+    elif escolha == "3":
+      arquivo = input("Digite o nome do arquivo txt sem a extensão: ")
+      
+      with open(arquivo + ".txt", 'rb') as file:
+        texto = file.read().decode('utf-8')
+        assinatura_int = sign_message(texto, private_key)
+        assinatura_bytes = format_signature(assinatura_int)
+        file.close()
+        
+      with open(arquivo + "_assinado.txt", 'wb') as file:
+        file.write(assinatura_bytes)
+        file.close()
+        
+      print(f'Arquivo assinado com o nome {arquivo}_assinado.txt\n\n')
+      
+    elif escolha == "4":
+      arquivo_na = input("Digite o nome do arquivo txt sem a assinatura sem a extensão: ")
+      arquivo_a = input("Digite o nome do arquivo txt com a assinatura sem a extensão: ")
+      
+      with open(arquivo_na + ".txt", 'rb') as file:
+        texto = file.read().decode('utf-8')
+        file.close()
+        
+      with open(arquivo_a + ".txt", 'rb') as file:
+        texto_assinado = file.read()
+        file.close()
+      
+      if verify_signature(texto, texto_assinado, public_key):
+        print("Assinatura verificada com sucesso!\n\n")
+      else:
+        print("Assinatura inválida!\n\n")
+      
+    elif escolha == "5":
+      break
+    
+    else:
+      print("Comando inválido!!")

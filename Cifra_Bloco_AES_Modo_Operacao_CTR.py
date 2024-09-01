@@ -220,16 +220,20 @@ print("Decipher Text (String): ", bytes(deciphertext).decode())
 with open('teste.txt', 'rb') as file:
   plaintext = file.read()
   ciphertext = cifracao_modo_operacao_CTR(plaintext, key, nonce, counter)
+  file.close()
   
 # Cria um arquivo teste_encriptado.bin que contém o conteúdo de teste.txt encriptado
-with open('teste_encriptado.bin', 'wb') as file:
+with open('teste_encriptado.txt', 'wb') as file:
   file.write(ciphertext)
+  file.close()
   
 # Abre o arquivo teste_encriptado.bin e pega o conteúdo em bytes
-with open('teste_encriptado.bin', 'rb') as file:
+with open('teste_encriptado.txt', 'rb') as file:
   cyphertext = file.read()
   deciphertext = decifracao_modo_operacao_CTR(cyphertext, key, nonce, counter)
+  file.close()
   
 # Cria um arquivo teste_desencriptado.txt que contém o conteúdo de teste_encriptado.bin desencriptado
 with open('teste_desencriptado.txt', 'wb') as file:
   file.write(deciphertext)
+  file.close()
