@@ -170,7 +170,7 @@ if __name__ == "__main__":
     print("1 - Criptografar um arquivo usando RSA OAEP")
     print("2 - Desencriptar um arquivo usando RSA OAEP")
     print("3 - Fazer a assinatura de um arquivo")
-    print("4 - Verificara a assinatura de um arquivo")
+    print("4 - Verificar a assinatura de um arquivo")
     print("5 - Sair")
     print()
     
@@ -220,7 +220,7 @@ if __name__ == "__main__":
       print(f'Arquivo assinado com o nome {arquivo}_assinado.txt\n\n')
       
     elif escolha == "4":
-      arquivo_na = input("Digite o nome do arquivo txt sem a assinatura sem a extensão: ")
+      arquivo_na = input("Digite o nome do arquivo txt original sem a extensão: ")
       arquivo_a = input("Digite o nome do arquivo txt com a assinatura sem a extensão: ")
       
       with open(arquivo_na + ".txt", 'rb') as file:
@@ -240,4 +240,4 @@ if __name__ == "__main__":
       break
     
     else:
-      print("Comando inválido!!")
+      print("Comando inválido!!\n\n")
