@@ -2,7 +2,7 @@ import random
 import hashlib
 import os
 
-# Função para encontrar um número primo grande
+# Função para gerar um número primo gde 1024 bits
 def generate_large_prime(bits=1024):
   while True:
     num = random.getrandbits(bits)
